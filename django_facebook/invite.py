@@ -93,17 +93,17 @@ def post_on_profile(user, fb, facebook_id, invite_message, force_class=None, for
         else:
             logger.info(
                 'we are not sending email at the moment cause the invite already existed')
-    except facebook_exceptions.OpenFacebookException, e:
-        logger.warn(unicode(e), exc_info=sys.exc_info(), extra={
+    except facebook_exceptions.OpenFacebookException as e:
+        logger.warn(str(e), exc_info=sys.exc_info(), extra={
             'data': {
                 'user': user,
                 'message': invite_message,
                 'facebook_user': facebook_id,
-                'body': unicode(e),
+                'body': str(e),
             }
         })
         fb_invite.error = True
-        fb_invite.error_message = unicode(e)
+        fb_invite.error_message = str(e)
         fb_invite.save()
         if raise_:
             raise

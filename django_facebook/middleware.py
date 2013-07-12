@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from django.contrib.auth import logout
 
@@ -68,7 +68,7 @@ class FacebookCanvasMiddleWare(object):
             parsed_signed_request = FacebookAuthorization.parse_signed_data(
                 signed_request)
             access_token = parsed_signed_request['oauth_token']
-            facebook_id = long(parsed_signed_request['user_id'])
+            facebook_id = int(parsed_signed_request['user_id'])
         except:
             # redirect to authorization dialog
             # if app not authorized by user

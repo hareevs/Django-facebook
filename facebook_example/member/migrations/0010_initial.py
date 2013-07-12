@@ -9,8 +9,8 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding model 'CustomFacebookUser'
-        db.create_table(u'member_customfacebookuser', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table('member_customfacebookuser', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
@@ -36,27 +36,27 @@ class Migration(SchemaMigration):
             ('image', self.gf('django.db.models.fields.files.ImageField')(max_length=255, null=True, blank=True)),
             ('state', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
         ))
-        db.send_create_signal(u'member', ['CustomFacebookUser'])
+        db.send_create_signal('member', ['CustomFacebookUser'])
 
         # Adding M2M table for field groups on 'CustomFacebookUser'
-        db.create_table(u'member_customfacebookuser_groups', (
+        db.create_table('member_customfacebookuser_groups', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('customfacebookuser', models.ForeignKey(orm[u'member.customfacebookuser'], null=False)),
-            ('group', models.ForeignKey(orm[u'auth.group'], null=False))
+            ('customfacebookuser', models.ForeignKey(orm['member.customfacebookuser'], null=False)),
+            ('group', models.ForeignKey(orm['auth.group'], null=False))
         ))
-        db.create_unique(u'member_customfacebookuser_groups', ['customfacebookuser_id', 'group_id'])
+        db.create_unique('member_customfacebookuser_groups', ['customfacebookuser_id', 'group_id'])
 
         # Adding M2M table for field user_permissions on 'CustomFacebookUser'
-        db.create_table(u'member_customfacebookuser_user_permissions', (
+        db.create_table('member_customfacebookuser_user_permissions', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('customfacebookuser', models.ForeignKey(orm[u'member.customfacebookuser'], null=False)),
-            ('permission', models.ForeignKey(orm[u'auth.permission'], null=False))
+            ('customfacebookuser', models.ForeignKey(orm['member.customfacebookuser'], null=False)),
+            ('permission', models.ForeignKey(orm['auth.permission'], null=False))
         ))
-        db.create_unique(u'member_customfacebookuser_user_permissions', ['customfacebookuser_id', 'permission_id'])
+        db.create_unique('member_customfacebookuser_user_permissions', ['customfacebookuser_id', 'permission_id'])
 
         # Adding model 'UserProfile'
-        db.create_table(u'member_userprofile', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        db.create_table('member_userprofile', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('about_me', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('facebook_id', self.gf('django.db.models.fields.BigIntegerField')(unique=True, null=True, blank=True)),
             ('access_token', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
@@ -72,12 +72,12 @@ class Migration(SchemaMigration):
             ('image', self.gf('django.db.models.fields.files.ImageField')(max_length=255, null=True, blank=True)),
             ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
         ))
-        db.send_create_signal(u'member', ['UserProfile'])
+        db.send_create_signal('member', ['UserProfile'])
 
 
     def backwards(self, orm):
         # Deleting model 'CustomFacebookUser'
-        db.delete_table(u'member_customfacebookuser')
+        db.delete_table('member_customfacebookuser')
 
         # Removing M2M table for field groups on 'CustomFacebookUser'
         db.delete_table('member_customfacebookuser_groups')
@@ -86,47 +86,47 @@ class Migration(SchemaMigration):
         db.delete_table('member_customfacebookuser_user_permissions')
 
         # Deleting model 'UserProfile'
-        db.delete_table(u'member_userprofile')
+        db.delete_table('member_userprofile')
 
 
     models = {
-        u'auth.group': {
+        'auth.group': {
             'Meta': {'object_name': 'Group'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
         },
-        u'auth.permission': {
+        'auth.permission': {
             'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        u'auth.user': {
+        'auth.user': {
             'Meta': {'object_name': 'User'},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
-        u'contenttypes.contenttype': {
+        'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'member.customfacebookuser': {
+        'member.customfacebookuser': {
             'Meta': {'object_name': 'CustomFacebookUser'},
             'about_me': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'access_token': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -140,8 +140,8 @@ class Migration(SchemaMigration):
             'facebook_profile_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'gender': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -152,11 +152,11 @@ class Migration(SchemaMigration):
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'raw_data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'}),
             'website_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
-        u'member.userprofile': {
+        'member.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'about_me': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'access_token': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -167,11 +167,11 @@ class Migration(SchemaMigration):
             'facebook_open_graph': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'facebook_profile_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'gender': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'new_token_required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'raw_data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'}),
             'website_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         }
     }

@@ -5,6 +5,7 @@ from django_facebook import settings as facebook_settings
 from django_facebook.utils import get_profile_model, is_user_attribute, \
     get_user_model
 import operator
+from functools import reduce
 
 
 class FacebookBackend(backends.ModelBackend):

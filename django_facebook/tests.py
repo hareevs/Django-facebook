@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.urlresolvers import reverse
@@ -106,7 +106,7 @@ class DecoratorTest(BaseDecoratorTest):
         '''
         self.mock_authenticated()
         response = self.client.get(self.url, follow=True)
-        self.assertEqual(response.content, 'authorized')
+        self.assertEqual(response.content, b'authorized')
 
     def test_decorator_denied(self):
         '''
@@ -117,7 +117,7 @@ class DecoratorTest(BaseDecoratorTest):
         get = QueryDict(query_dict_string, True)
         denied_url = '%s?%s' % (self.url, get.urlencode())
         response = self.client.get(denied_url, follow=True)
-        self.assertEqual(response.content, 'user denied or error')
+        self.assertEqual(response.content, b'user denied or error')
 
 
 class ScopedDecoratorTest(DecoratorTest):
@@ -143,7 +143,7 @@ class ScopedDecoratorTest(DecoratorTest):
         to_fail = partial(myview, self.request)
         try:
             to_fail()
-        except TypeError, e:
+        except TypeError as e:
             right_error = "inner() got an unexpected keyword argument 'c'"
             self.assertEqual(e.message, right_error)
 

@@ -57,8 +57,8 @@ class OpenFacebookTest(unittest.TestCase):
 
         # capture print statements
         import sys
-        import StringIO
-        self.prints = sys.stdout = StringIO.StringIO()
+        import io
+        self.prints = sys.stdout = io.StringIO()
 
     def tearDown(self):
         # complain about print statements
@@ -127,7 +127,7 @@ class TestErrorMapping(OpenFacebookTest):
             try:
                 FacebookConnection.raise_error(response['error']['type'],
                                                response['error']['message'])
-            except open_facebook_exceptions.OAuthException, e:
+            except open_facebook_exceptions.OAuthException as e:
                 oauth = True
             assert oauth, 'response %s didnt raise oauth error' % response
 
@@ -159,11 +159,11 @@ class Test500Detection(OpenFacebookTest):
         This is actually an application error
 
         '''
-        from StringIO import StringIO
+        from io import StringIO
         graph = self.guy.graph()
 
         with mock.patch('urllib2.build_opener') as patched:
-            from urllib2 import HTTPError
+            from urllib.error import HTTPError
 
             opener = mock.MagicMock()
             response = StringIO('''{
@@ -190,16 +190,16 @@ class Test500Detection(OpenFacebookTest):
         Exception
 
         '''
-        from StringIO import StringIO
+        from io import StringIO
         graph = self.guy.graph()
 
         with mock.patch('urllib2.build_opener') as patched:
-            from urllib2 import HTTPError
+            from urllib.error import HTTPError
 
             opener = mock.MagicMock()
 
             def side_effect(*args, **kwargs):
-                response = StringIO(u'''
+                response = StringIO('''
                 <title>Facebook | Error</title>
                 Sorry, something went wrong.
                 ''')
@@ -223,12 +223,12 @@ class TestPublishing(OpenFacebookTest):
         graph = self.thi.graph()
         permission_responses = [
             (
-                {u'paging': {u'next': u'https://graph.facebook.com/100005270323705/permissions?access_token=CAADD9tTuZCZBQBALXBfM0xDzsn68jAS8HgUSnbhRkZAp5L1FFpY7iLu3aAytCv8jGN4ZCXZAbZCehSvnK7e8d9P22FZCeHarRnFbFne8MluM0S7UNhoCwKWBNrazrs2tjZCIelQAdzesschwzUr3kRCR0oL9bW4Tp6syWmjm0FOUjwZDZD&limit=5000&offset=5000'}, u'data': [
-                    {u'user_photos': 1, u'publish_actions': 1, u'read_stream': 1, u'video_upload': 1, u'installed': 1, u'offline_access': 1, u'create_note': 1, u'publish_stream': 1, u'photo_upload': 1, u'share_item': 1, u'status_update': 1}]},
-                {u'user_photos': True, u'publish_actions': True, u'read_stream': True, u'video_upload': True, u'installed': True, u'offline_access': True, u'create_note': True, u'publish_stream': True, u'photo_upload': True, u'share_item': True, u'status_update': True}),
+                {'paging': {'next': 'https://graph.facebook.com/100005270323705/permissions?access_token=CAADD9tTuZCZBQBALXBfM0xDzsn68jAS8HgUSnbhRkZAp5L1FFpY7iLu3aAytCv8jGN4ZCXZAbZCehSvnK7e8d9P22FZCeHarRnFbFne8MluM0S7UNhoCwKWBNrazrs2tjZCIelQAdzesschwzUr3kRCR0oL9bW4Tp6syWmjm0FOUjwZDZD&limit=5000&offset=5000'}, 'data': [
+                    {'user_photos': 1, 'publish_actions': 1, 'read_stream': 1, 'video_upload': 1, 'installed': 1, 'offline_access': 1, 'create_note': 1, 'publish_stream': 1, 'photo_upload': 1, 'share_item': 1, 'status_update': 1}]},
+                {'user_photos': True, 'publish_actions': True, 'read_stream': True, 'video_upload': True, 'installed': True, 'offline_access': True, 'create_note': True, 'publish_stream': True, 'photo_upload': True, 'share_item': True, 'status_update': True}),
             (
-                {u'paging': {
-                    u'next': u'https://graph.facebook.com/100005270323705/permissions?access_token=CAADD9tTuZCZBQBALXBfM0xDzsn68jAS8HgUSnbhRkZAp5L1FFpY7iLu3aAytCv8jGN4ZCXZAbZCehSvnK7e8d9P22FZCeHarRnFbFne8MluM0S7UNhoCwKWBNrazrs2tjZCIelQAdzesschwzUr3kRCR0oL9bW4Tp6syWmjm0FOUjwZDZD&limit=5000&offset=5000'}, u'data': []},
+                {'paging': {
+                    'next': 'https://graph.facebook.com/100005270323705/permissions?access_token=CAADD9tTuZCZBQBALXBfM0xDzsn68jAS8HgUSnbhRkZAp5L1FFpY7iLu3aAytCv8jGN4ZCXZAbZCehSvnK7e8d9P22FZCeHarRnFbFne8MluM0S7UNhoCwKWBNrazrs2tjZCIelQAdzesschwzUr3kRCR0oL9bW4Tp6syWmjm0FOUjwZDZD&limit=5000&offset=5000'}, 'data': []},
                 {}),
         ]
         # test the full flow, just check no errors are raised
@@ -252,7 +252,7 @@ class TestPublishing(OpenFacebookTest):
         try:
             guy_graph.set('me/feed', message='Nonnonono')
             raise ValueError('We were expecting a permissions exception')
-        except facebook_exceptions.PermissionException, e:
+        except facebook_exceptions.PermissionException as e:
             pass
 
     def test_og_follow(self):
@@ -306,7 +306,7 @@ class TestOpenFacebook(OpenFacebookTest):
                 code, redirect_uri='http://local.mellowmorning.com:8080')
             facebook = OpenFacebook(user_token['access_token'])
             facebook.me()
-        except open_facebook_exceptions.ParameterException, e:
+        except open_facebook_exceptions.ParameterException as e:
             pass
 
     def test_fql(self):

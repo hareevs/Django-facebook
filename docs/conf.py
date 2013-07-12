@@ -51,8 +51,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'facebook_example.settings'
 django_facebook = __import__('django_facebook')
 
 # General information about the project.
-project = u'Django Facebook'
-copyright = u'2011, Thierry Schellenbach'
+project = 'Django Facebook'
+copyright = '2011, Thierry Schellenbach'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -191,8 +191,8 @@ htmlhelp_basename = 'DjangoFacebookdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'DjangoFacebook.tex', u'Django Facebook Documentation',
-   u'Thierry Schellenbach', 'manual'),
+  ('index', 'DjangoFacebook.tex', 'Django Facebook Documentation',
+   'Thierry Schellenbach', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -224,6 +224,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'djangofacebook', u'Django Facebook Documentation',
-     [u'Thierry Schellenbach'], 1)
+    ('index', 'djangofacebook', 'Django Facebook Documentation',
+     ['Thierry Schellenbach'], 1)
 ]

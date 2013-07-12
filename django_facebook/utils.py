@@ -174,7 +174,7 @@ def get_url_field():
     field = URLField()
     try:
         field = URLField(verify_exists=False)
-    except TypeError, e:
+    except TypeError as e:
         pass
     return field
 
@@ -196,7 +196,7 @@ def has_permissions(graph, scope_list):
     try:
         if graph:
             permissions_granted = graph.has_permissions(scope_list)
-    except open_facebook_exceptions.OAuthException, e:
+    except open_facebook_exceptions.OAuthException as e:
         pass
     return permissions_granted
 
@@ -328,8 +328,8 @@ def mass_get_or_create(model_class, base_queryset, id_field, default_dict,
     '''
     current_instances = list(base_queryset)
     current_ids = set(
-        [unicode(getattr(c, id_field)) for c in current_instances])
-    given_ids = map(unicode, default_dict.keys())
+        [str(getattr(c, id_field)) for c in current_instances])
+    given_ids = list(map(str, list(default_dict.keys())))
     # both ends of the comparison are in unicode ensuring the not in works
     new_ids = [g for g in given_ids if g not in current_ids]
     inserted_model_instances = []
@@ -407,7 +407,7 @@ def get_django_registration_version():
 
     try:
         import registration
-    except ImportError, e:
+    except ImportError as e:
         version = None
 
     return version
@@ -423,7 +423,7 @@ def parse_scope(scope):
     ['email','user_about_me']
     '''
     assert scope, 'scope is required'
-    if isinstance(scope, basestring):
+    if isinstance(scope, str):
         scope_list = scope.split(',')
     elif isinstance(scope, (list, tuple)):
         scope_list = list(scope)
@@ -488,12 +488,12 @@ def to_int(input, default=0, exception=(ValueError, TypeError), regexp=None):
     '''
     if regexp is True:
         regexp = re.compile('(\d+)')
-    elif isinstance(regexp, basestring):
+    elif isinstance(regexp, str):
         regexp = re.compile(regexp)
     elif hasattr(regexp, 'search'):
         pass
     elif regexp is not None:
-        raise(TypeError, 'unknown argument for regexp parameter')
+        raise TypeError('unknown argument for regexp parameter')
 
     try:
         if regexp:
@@ -638,7 +638,7 @@ def get_class_for(purpose):
     '''
     mapping = get_class_mapping()
     class_ = mapping[purpose]
-    if isinstance(class_, basestring):
+    if isinstance(class_, str):
         class_ = get_class_from_string(class_)
     return class_
 

@@ -53,8 +53,8 @@ def base64_url_decode_php_style(inp):
     import base64
     padding_factor = (4 - len(inp) % 4) % 4
     inp += "=" * padding_factor
-    return base64.b64decode(unicode(inp).translate(
-        dict(zip(map(ord, u'-_'), u'+/'))))
+    return base64.b64decode(str(inp).translate(
+        dict(list(zip(list(map(ord, '-_')), '+/')))))
 
 
 def encode_params(params_dict):
@@ -74,9 +74,9 @@ def smart_str(s, encoding='utf-8', strings_only=False, errors='strict'):
     If strings_only is True, don't convert (some) non-string-like objects.
     """
     import types
-    if strings_only and isinstance(s, (types.NoneType, int)):
+    if strings_only and isinstance(s, (None, int)):
         return s
-    elif not isinstance(s, basestring):
+    elif not isinstance(s, str):
         try:
             return str(s)
         except UnicodeEncodeError:
@@ -86,8 +86,8 @@ def smart_str(s, encoding='utf-8', strings_only=False, errors='strict'):
                 # further exception.
                 return ' '.join([smart_str(arg, encoding, strings_only,
                                            errors) for arg in s])
-            return unicode(s).encode(encoding, errors)
-    elif isinstance(s, unicode):
+            return str(s).encode(encoding, errors)
+    elif isinstance(s, str):
         return s.encode(encoding, errors)
     elif s and encoding != 'utf-8':
         return s.decode('utf-8', errors).encode(encoding, errors)
@@ -110,7 +110,7 @@ def send_warning(message, request=None, e=None, **extra_data):
 
     error_message = None
     if e:
-        error_message = unicode(e)
+        error_message = str(e)
 
     data = {
         'username': username,
@@ -157,7 +157,7 @@ def merge_urls(generated_url, human_url):
     u'http://mysite.com?invalidparam&p=1'
     '''
     if '?' not in human_url:
-        return u'%s' % human_url
+        return '%s' % human_url
 
     gen_path, gen_args = generated_url.split('?', 1)
     hum_path, hum_args = human_url.split('?', 1)
@@ -174,13 +174,13 @@ def merge_urls(generated_url, human_url):
 
     # prepend crazy param w/o values
     for param in get_novalues_args(gen_args):
-        out_args.append(u'%s' % param)
+        out_args.append('%s' % param)
 
     # replace gen url params
     for k, v in get_args(gen_args):
-        out_args.append(u'%s=%s' % (k, hum_dict.get(k, v)))
+        out_args.append('%s=%s' % (k, hum_dict.get(k, v)))
 
-    return u'%s?%s' % (gen_path, '&'.join(out_args))
+    return '%s?%s' % (gen_path, '&'.join(out_args))
 
 
 class memoized(object):

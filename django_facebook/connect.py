@@ -15,7 +15,7 @@ from django_facebook.utils import get_registration_backend, get_form_class, \
 from random import randint
 import logging
 import sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 logger = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ def connect_user(request, access_token=None, facebook_graph=None, connect_facebo
             try:
                 user = _register_user(request, converter,
                                       remove_old_connections=force_registration)
-            except facebook_exceptions.AlreadyRegistered, e:
+            except facebook_exceptions.AlreadyRegistered as e:
                 # in Multithreaded environments it's possible someone beats us to
                 # the punch, in that case just login
                 logger.info(
@@ -148,13 +148,13 @@ def _update_likes_and_friends(request, user, facebook):
         if facebook_settings.FACEBOOK_STORE_FRIENDS:
             facebook.get_and_store_friends(user)
         transaction.savepoint_commit(sid)
-    except IntegrityError, e:
-        logger.warn(u'Integrity error encountered during registration, '
+    except IntegrityError as e:
+        logger.warn('Integrity error encountered during registration, '
                     'probably a double submission %s' % e,
                     exc_info=sys.exc_info(), extra={
                         'request': request,
                         'data': {
-                            'body': unicode(e),
+                            'body': str(e),
                         }
                     })
         transaction.savepoint_rollback(sid)
@@ -222,7 +222,7 @@ def _register_user(request, facebook, profile_callback=None,
                       initial={'ip': request.META['REMOTE_ADDR']})
 
     if not form.is_valid():
-        error_message_format = u'Facebook data %s gave error %s'
+        error_message_format = 'Facebook data %s gave error %s'
         error_message = error_message_format % (facebook_data, form.errors)
         error = facebook_exceptions.IncompleteProfileError(error_message)
         error.form = form
@@ -238,7 +238,7 @@ def _register_user(request, facebook, profile_callback=None,
         if new_user is None:
             raise ValueError(
                 'new_user is None, note that backward compatability for the older versions of django registration has been dropped.')
-    except IntegrityError, e:
+    except IntegrityError as e:
         # this happens when users click multiple times, the first request registers
         # the second one raises an error
         raise facebook_exceptions.AlreadyRegistered(e)
@@ -368,7 +368,7 @@ def _update_image(facebook_id, image_url):
     '''
     image_name = 'fb_image_%s.jpg' % facebook_id
     image_temp = NamedTemporaryFile()
-    image_response = urllib2.urlopen(image_url)
+    image_response = urllib.request.urlopen(image_url)
     image_content = image_response.read()
     image_temp.write(image_content)
     http_message = image_response.info()

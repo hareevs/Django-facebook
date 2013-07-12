@@ -89,12 +89,11 @@ from open_facebook import exceptions as facebook_exceptions
 from open_facebook.utils import json, encode_params, send_warning, memoized, \
     stop_statsd, start_statsd
 import logging
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
 from django_facebook.utils import to_int
 import ssl
 import re
-from urlparse import urlparse
+from urllib.parse import urlparse
 logger = logging.getLogger(__name__)
 
 
@@ -134,7 +133,7 @@ class FacebookConnection(object):
         api_base_url = cls.old_api_url if old_api else cls.api_url
         if getattr(cls, 'access_token', None):
             params['access_token'] = cls.access_token
-        url = '%s%s?%s' % (api_base_url, path, urllib.urlencode(params))
+        url = '%s%s?%s' % (api_base_url, path, urllib.parse.urlencode(params))
         response = cls._request(url, post_data)
         return response
 
@@ -155,7 +154,7 @@ class FacebookConnection(object):
             return response
 
         # nicely identify ourselves before sending the request
-        opener = urllib2.build_opener()
+        opener = urllib.request.build_opener()
         opener.addheaders = [('User-agent', 'Open Facebook Python')]
 
         # get the statsd path to track response times with
@@ -170,7 +169,7 @@ class FacebookConnection(object):
             extended_timeout = timeout * timeout_mp
             response_file = None
             encoded_params = encode_params(post_data) if post_data else None
-            post_string = (urllib.urlencode(encoded_params)
+            post_string = (urllib.parse.urlencode(encoded_params)
                            if post_data else None)
             try:
                 start_statsd('facebook.%s' % statsd_path)
@@ -179,7 +178,7 @@ class FacebookConnection(object):
                     response_file = opener.open(
                         url, post_string, timeout=extended_timeout)
                     response = response_file.read().decode('utf8')
-                except (urllib2.HTTPError,), e:
+                except urllib.error.HTTPError as e:
                     response_file = e
                     response = response_file.read().decode('utf8')
                     # Facebook sents error codes for many of their flows
@@ -190,14 +189,14 @@ class FacebookConnection(object):
                     server_error = cls.is_server_error(e, response)
                     if server_error:
                         # trigger a retry
-                        raise urllib2.URLError(
+                        raise urllib.error.URLError(
                             'Facebook is down %s' % response)
                 break
-            except (urllib2.HTTPError, urllib2.URLError, ssl.SSLError), e:
+            except (urllib.error.HTTPError, urllib.error.URLError, ssl.SSLError) as e:
                 # These are often temporary errors, so we will retry before
                 # failing
                 error_format = 'Facebook encountered a timeout (%ss) or error %s'
-                logger.warn(error_format, extended_timeout, unicode(e))
+                logger.warn(error_format, extended_timeout, str(e))
                 attempts -= 1
                 if not attempts:
                     # if we have no more attempts actually raise the error
@@ -219,7 +218,7 @@ class FacebookConnection(object):
         try:
             parsed_response = json.loads(response)
             logger.info('facebook send response %s' % parsed_response)
-        except Exception, e:
+        except Exception as e:
             # using exception because we need to support multiple json libs :S
             parsed_response = QueryDict(response, True)
             logger.info('facebook send response %s' % parsed_response)
@@ -320,7 +319,7 @@ class FacebookConnection(object):
         error_message = message
         if error_code:
             # this is handy when adding new exceptions for facebook errors
-            error_message = u'%s (error code %s)' % (message, error_code)
+            error_message = '%s (error code %s)' % (message, error_code)
 
         raise error_class(error_message)
 
@@ -361,13 +360,12 @@ class FacebookConnection(object):
                     if error_code and start <= error_code <= stop:
                         matching_error_class = class_
                         logger.info('Matched error on code %s', code)
-                elif isinstance(code, (int, long)):
+                elif isinstance(code, int):
                     if int(code) == error_code:
                         matching_error_class = class_
                         logger.info('Matched error on code %s', code)
                 else:
-                    raise(
-                        ValueError, 'Dont know how to handle %s of '
+                    raise ValueError('Dont know how to handle %s of '
                         'type %s' % (code, type(code)))
             # tell about the happy news if we found something
             if matching_error_class:
@@ -668,7 +666,7 @@ class OpenFacebook(FacebookConnection):
         '''
         try:
             me = self.me()
-        except facebook_exceptions.OpenFacebookException, e:
+        except facebook_exceptions.OpenFacebookException as e:
             if isinstance(e, facebook_exceptions.OAuthException):
                 raise
             me = None
@@ -878,7 +876,7 @@ class OpenFacebook(FacebookConnection):
         api_base_url = self.old_api_url if old_api else self.api_url
         if getattr(self, 'access_token', None):
             params['access_token'] = self.access_token
-        url = '%s%s?%s' % (api_base_url, path, urllib.urlencode(params))
+        url = '%s%s?%s' % (api_base_url, path, urllib.parse.urlencode(params))
         logger.info('requesting url %s', url)
         response = self._request(url, post_data)
         return response
